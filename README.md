@@ -3,6 +3,8 @@ These guidelines intend to make projects easier to work with, make codebases mor
 These guidelines build on Apple's existing [Coding Guidelines for Cocoa](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html).
 Unless explicitly contradicted below, assume that all of Apple's guidelines apply as well.
 
+After all, [style](http://alfiehanssen.com/images/dapperdan.jpeg) is everything.
+
 ## Xcode Project
 
 * The physical files should be kept in sync with the Xcode project files in order to avoid file sprawl. Any Xcode groups created should be reflected by folders in the filesystem. Code should be grouped not only by type, but also by feature for greater clarity.
