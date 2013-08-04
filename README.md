@@ -4,118 +4,156 @@ Unless explicitly contradicted below, assume that all of Apple's guidelines appl
 ## Whitespace
 
  * Tabs, not spaces.
- * End files with a newline.
- * Make liberal use of vertical whitespace to divide code into logical chunks.
+ * One line of whitespace in between methods.
+ * One line of whitespace in between logical code blocks. 
 
-## Documentation and Organization
+## Organization
 
- * All method declarations should be documented.
- * Comments should be hard-wrapped at 80 characters.
- * Comments should be [Tomdoc](http://tomdoc.org/)-style.
  * Use `#pragma mark`s to categorize methods into functional groupings and protocol implementations, following this general structure:
 
 ```objc
-#pragma mark Properties
+#pragma mark - Lifecycle
 
-@dynamic someProperty;
+- (void)viewDidLoad {}
 
-- (void)setCustomProperty:(id)value {}
-
-#pragma mark Lifecycle
-
-+ (id)objectWithThing:(id)thing {}
-- (id)init {}
-
-#pragma mark Drawing
+#pragma mark - Drawing
 
 - (void)drawRect:(CGRect) {}
 
-#pragma mark Another functional grouping
-
-#pragma mark GHSuperclass
-
-- (void)someOverriddenMethod {}
-
-#pragma mark NSCopying
+#pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {}
 
-#pragma mark NSObject
+#pragma mark - Another Functional Grouping
 
-- (NSString *)description {}
+- (BOOL)canDoCoolThingsWithStuff:(Stuff *)stuff {}
+
+#pragma mark - ATSuperclass
+
+- (void)someOverriddenMethod {}
+
 ```
 
-## Declarations
+## Variables
 
- * Never declare an ivar unless you need to change its type from its declared property.
- * Don’t use line breaks in method declarations.
- * Prefer exposing an immutable type for a property if it being mutable is an implementation detail. This is a valid reason to declare an ivar for a property.
+ * Always declare atomicity before memory-management semantics.
  * Always declare memory-management semantics even on `readonly` properties.
  * Declare properties `readonly` if they are only set once in `-init`.
  * Declare properties `copy` if they return immutable objects and aren't ever mutated in the implementation.
- * Don't use `@synthesize` unless the compiler requires it. Note that optional properties in protocols must be explicitly synthesized in order to exist.
+ * Don't use `@synthesize`.
+ * Never declare an ivar unless you need to change its type from its declared property.
  * Instance variables should be prefixed with an underscore (just like when implicitly synthesized).
  * Don't put a space between an object type and the protocol it conforms to.
  
 ```objc
-@property (attributes) id<Protocol> object;
+@property (nonatomic, weak) id<Protocol> delegate;
 @property (nonatomic, strong) NSObject<Protocol> *object;
 ```
  
- * C function declarations should have no space before the opening parenthesis, and should be namespaced just like a class.
+* Long, descriptive method and variable names are good. Single letter variable names should be avoided except in `for()` loops. 
+* Asterisks indicating pointers belong with the variable, i.e. `NSString *text` not `NSString* text` or `NSString * text`.
+
+This: `UIButton *settingsButton;`, and not this: `UIButton *setBut;`
+
+
+## Methods
+
+* There should be a space after the scope (-/+ symbol).
+* No space after the return type.
+* No space on either side of the `:`.
+* A single space between an object argument's type and the `*`.
 
 ```objc
-void GHAwesomeFunction(BOOL hasSomeArgs);
-```
-
- * Constructors should generally return [`instancetype`](http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types) rather than `id`.
- * Prefer C99 struct initialiser syntax to helper functions (such as `CGRectMake()`).
-
-```objc
-  CGRect rect = { .origin.x = 3.0, .origin.y = 12.0, .size.width = 15.0, .size.height = 80.0 };
+  - (BOOL)canDoCoolThingsWithStuff:(Stuff *)stuff andFriends:(NSArray *)friends {}
    ```
 
-## Expressions
+## CGRect Declarations
 
- * Don't access an ivar unless you're in `-init`, `-dealloc` or a custom accessor.
- * Use dot-syntax when invoking idempotent methods, including setters and class methods (like `NSFileManager.defaultManager`).
- * Use object literals, boxed expressions, and subscripting over the older, grosser alternatives.
- * Comparisons should be explicit for everything except `BOOL`s.
- * Prefer positive comparisons to negative.
- * Long form ternary operators should be wrapped in parentheses and only used for assignment and arguments.
+ * This:
+ 
+```objc
+  CGRect rect = (CGRect){0.0f, 0.0f, 100.0f, 100.0f};
+   ```
+
+* Not this:
 
 ```objc
-Blah *a = (stuff == thing ? foo : bar);
-```
+  CGRect rect = CGRectMake(0.0f, 0.0f, 100.0f, 100.0f);
+   ```
 
-* Short form, `nil` coalescing ternary operators should avoid parentheses.
+## Dot-notation Vs. Brackets
 
+Dot-notation should **always** be used for accessing and mutating properties. Bracket notation is preferred in all other instances.
+
+**For example, this:**  
 ```objc
-Blah *b = thingThatCouldBeNil ?: defaultValue;
+view.backgroundColor = [UIColor orangeColor];
+[UIApplication sharedApplication].delegate;
 ```
 
- * There shouldn't be a space between a cast and the variable being cast.
-
-``` objc
-NewType a = (NewType)b;
+**Not this:**
+```objc
+[view setBackgroundColor:[UIColor orangeColor]];
+UIApplication.sharedApplication.delegate;
 ```
 
-## Control Structures
+## Conditionals
 
- * Always surround `if` bodies with curly braces if there is an `else`. Single-line `if` bodies without an `else` should be on the same line as the `if`. 
- * All curly braces should begin on the same line as their associated statement. They should end on a new line.
  * Put a single space after keywords and before their parentheses.
- * Return and break early.
  * No spaces between parentheses and their contents.
+ * Conditional bodies should **always** use braces.
+
+**For example:**
+```objc
+if (!error) {
+    return success;
+}
+```
+
+**Not:**
+```objc
+if (!error)
+    return success;
+```
+
+or  
 
 ```objc
-if (shitIsBad) return;
+if (!error) return success;
+```
 
-if (something == nil) {
-	// do stuff
+* Braces should not occupy their own line, with the exception of the closing brace. This:
+
+```objc
+if (error) {
+
 } else {
-	// do other stuff
+
 }
+```
+
+Not this or any variation of it:
+
+```objc
+if (error) 
+{
+
+} else 
+{
+
+}
+```
+
+## Private Properties
+
+* Private properties should be declared in anonymous categories in the implementation file of a class, never in the header file.
+
+```objc
+@interface Person ()
+
+@property (nonatomic, strong) NSString *nickname;
+
+@end
 ```
 
 ## Blocks
@@ -134,39 +172,3 @@ id (^blockName2)(id) = ^ id (id args) {
     // do some things
 };
 ```
-
-## Literals
-
- * Avoid making numbers a specific type unless necessary (for example, prefer `5` to `5.0`, and `5.3` to `5.3f`).
- * The contents of array and dictionary literals should have a space on both sides.
- * Dictionary literals should have no space between the key and the colon, and a single space between colon and value.
-
-``` objc
-NSArray *theShit = @[ @1, @2, @3 ];
-
-NSDictionary *keyedShit = @{ GHDidCreateStyleGuide: @YES };
-```
-
- * Longer or more complex literals should be split over multiple lines (optionally with a terminating comma):
-
-``` objc
-NSArray *theShit = @[
-    @"Got some long string objects in here.",
-    [AndSomeModelObjects too],
-    @"Moar strings."
-];
-
-NSDictionary *keyedShit = @{
-    @"this.key": @"corresponds to this value",
-    @"otherKey": @"remoteData.payload",
-    @"some": @"more",
-    @"JSON": @"keys",
-    @"and": @"stuff",
-};
-```
-
-## Categories
-
- * Categories should be named for the sort of functionality they provide. Don't create umbrella categories.
- * Category methods should always be prefixed.
- * If you need to expose private methods for subclasses or unit testing, create a class extension named `Class+Private`.
