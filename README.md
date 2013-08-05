@@ -1,9 +1,7 @@
-These guidelines intend to make projects easier to work with, make codebases more readable, and make collaboration easier. 
+These [style](http://alfiehanssen.com/images/dapperdan.jpeg) guidelines intend to make projects easier to work with, make codebases more readable, and make collaboration easier. 
 
 These guidelines build on Apple's existing [Coding Guidelines for Cocoa](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html).
 Unless explicitly contradicted below, assume that all of Apple's guidelines apply as well.
-
-After all, [style](http://alfiehanssen.com/images/dapperdan.jpeg) is everything.
 
 ## Xcode Project
 
